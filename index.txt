@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pesquisa de Portfólio | Super Aço</title>
+  <meta name="description" content="Pesquisa simples e objetiva para entender a utilização do portfólio Super Aço e mapear oportunidades." />
+  <style>
+    :root{
+      --text:#e9eef7;
+      --muted:#b9c6da;
+      --line:rgba(255,255,255,.12);
+      --accent:#4aa3ff;
+      --danger:#fb7185;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 18px;
+      --max: 980px;
+      font-synthesis-weight: none;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(74,163,255,.25), transparent 60%),
+                  radial-gradient(900px 700px at 85% 25%, rgba(45,212,191,.15), transparent 55%),
+                  linear-gradient(180deg, #06101f 0%, #070a12 55%, #060813 100%);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      line-height:1.35;
+    }
+    .wrap{max-width:var(--max); margin:0 auto; padding: 0 18px 70px;}
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding: 20px 18px 20px;
+      background: linear-gradient(180deg, #1a3a52 0%, #2d5a7b 100%);
+      margin: 0 -18px 26px -18px;
+      border-bottom: 2px solid rgba(74,163,255,.3);
+    }
+    .brand{display:flex; align-items:center; gap:16px; min-width: 280px;}
+    .brand img{height:60px; width:auto; object-fit:contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));}
+    .brand .info .t1{font-weight:800; letter-spacing:.2px; font-size: 18px;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 10px 14px;
+      border:1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .hero{display:grid; grid-template-columns: 1fr; gap: 18px; align-items: stretch; margin: 6px 0 18px;}
+    @media (max-width: 860px){.hero{grid-template-columns: 1fr}.pill{display:none}}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .heroText{padding: 22px 22px 18px;}
+    h1{margin: 0 0 10px; font-size: clamp(26px, 3.5vw, 42px); line-height:1.1; letter-spacing: -0.6px;}
+    .sub{color: var(--muted); font-size: 15.5px; margin: 0 0 14px;}
+    .kpis{display:flex; flex-wrap:wrap; gap:10px; margin-top: 14px;}
+    .kpi{flex: 1 1 190px; background: rgba(0,0,0,.18); border: 1px solid var(--line); border-radius: 14px; padding: 12px 12px;}
+    .kpi b{display:block; font-size: 14px}
+    .kpi span{color:var(--muted); font-size: 13px}
+    form{padding: 20px 22px 24px;}
+    .grid{display:grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+    @media (max-width: 720px){.grid{grid-template-columns: 1fr}}
+    .section{margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);}
+    .section h2{margin: 0 0 10px; font-size: 16px; letter-spacing: .1px;}
+    label{display:block; font-size: 13.5px; color: var(--muted); margin: 10px 0 6px;}
+    input[type="text"], input[type="email"], textarea, select{
+      width:100%; padding: 12px 12px; border-radius: 12px; border:1px solid var(--line);
+      background: rgba(0,0,0,.22); color: var(--text); outline: none;
+    }
+    textarea{min-height: 92px; resize: vertical;}
+    .optRow{display:flex; flex-wrap:wrap; gap:10px; margin: 8px 0 0;}
+    .opt{display:flex; align-items:flex-start; gap:8px; padding: 10px 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); flex: 1 1 260px;}
+    .opt input{margin-top:3px}
+    .likert{display:grid; grid-template-columns: 1.6fr repeat(5, 1fr); gap: 8px; align-items:center; border:1px solid var(--line); border-radius: 14px; overflow:hidden; margin-top: 10px;}
+    .likert > div{padding: 10px 10px; background: rgba(0,0,0,.18); border-right: 1px solid var(--line); font-size: 13px; color: var(--muted);}
+    .likert > div:last-child{border-right:none}
+    .likert .q{font-weight:700; color: var(--text)}
+    .likert .c{display:flex; justify-content:center; align-items:center;}
+    .likert .c input{transform: scale(1.05);}
+    .hint{color: var(--muted); font-size: 12.5px; margin-top: 6px}
+    .actions{display:flex; gap: 10px; flex-wrap:wrap; margin-top: 18px; align-items:center; justify-content: space-between;}
+    .btn{cursor:pointer; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(74,163,255,.90), rgba(44,124,220,.88));
+      color: #06101f; font-weight: 800; letter-spacing: .2px; box-shadow: 0 14px 30px rgba(74,163,255,.22);
+    }
+    .btn.secondary{background: rgba(255,255,255,.06); color: var(--text); box-shadow:none;}
+    footer{margin-top: 16px; color: var(--muted); font-size: 12.5px; opacity:.95; text-align:center;}
+    .req{color: var(--danger); font-weight: 800}
+    .small{font-size:12.5px; color: var(--muted);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand" aria-label="Super Aço">
+        <svg width="180" height="60" viewBox="0 0 180 60" style="filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));">
+          <text x="10" y="42" font-size="32" font-weight="900" fill="#ffffff" letter-spacing="2">SUPER</text>
+          <text x="110" y="42" font-size="28" font-weight="700" fill="#4aa3ff" letter-spacing="1">Aço</text>
+          <rect x="10" y="48" width="145" height="3" fill="#4aa3ff" rx="1.5"/>
+          <rect x="10" y="54" width="85" height="2" fill="#4aa3ff" rx="1"/>
+        </svg>
+        <div class="info">
+          <div class="t1">Pesquisa de Portfólio</div>
+          <div class="small">Grupo Super Aço</div>
+        </div>
+      </div>
+      <div class="pill">Tempo médio: 2–4 min • Respostas vão para o e-mail comercial</div>
+    </header>
+
+    <section class="hero">
+      <div class="card heroText">
+        <h1>Benchmarking de SKU's – Melhoria Contínua</h1>
+        <p class="sub">
+          Esta pesquisa é simples e objetiva. O objetivo é entender a utilização do nosso portfólio (com ênfase em:
+          <b>Trefilados 1020/1045</b>, <b>Especiais 4140</b>, <b>Tubos galvanizados</b> e <b>Tubos finos a frio</b>),
+          e abrir espaço para identificar novas oportunidades.
+        </p>
+        <div class="kpis">
+          <div class="kpi">
+            <b>Confidencialidade</b>
+            <span>Identificação opcional (preencha apenas se quiser).</span>
+          </div>
+          <div class="kpi">
+            <b>Objetividade</b>
+            <span>Escalas simples (1 a 5) e campos curtos.</span>
+          </div>
+          <div class="kpi">
+            <b>Retorno rápido</b>
+            <span>Se desejar, nossa equipe entra em contato ao final.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+
+      <!-- ✅ FORM ÚNICO: tudo dentro do mesmo form (FormSubmit) -->
+      <form action="https://formsubmit.co/diogo.goncalves@gruposuperaco.com" method="POST">
+        <input type="hidden" name="_subject" value="Nova resposta do formulário Super Aço">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_cc" value="diego.goncalves@gruposuperaco.com">
+        <!-- (opcional) após enviar, redireciona para uma página/URL -->
+        <!-- <input type="hidden" name="_next" value="https://seusite.com/obrigado.html"> -->
+
+        <div class="section" style="margin-top:0; padding-top:0; border-top:none;">
+          <h2>Identificação (Opcional)</h2>
+          <div class="grid">
+            <div>
+              <label for="empresa">Empresa</label>
+              <input id="empresa" name="Empresa" type="text" placeholder="Ex.: Metalúrgica XYZ" />
+            </div>
+            <div>
+              <label for="nome">Nome</label>
+              <input id="nome" name="Nome" type="text" placeholder="Seu nome" />
+            </div>
+            <div>
+              <label for="cidade">Cidade/UF</label>
+              <input id="cidade" name="Cidade/UF" type="text" placeholder="Ex.: Caxias do Sul/RS" />
+            </div>
+            <div>
+              <label for="cargo">Cargo</label>
+              <select id="cargo" name="Cargo">
+                <option value="" selected>Selecione (opcional)</option>
+                <option>Compras</option>
+                <option>Produção</option>
+                <option>Comercial</option>
+                <option>Direção</option>
+                <option>Outro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Utilização do Portfólio</h2>
+
+          <label>1) Você utiliza atualmente produtos da Super Aço? <span class="req">*</span></label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Utiliza atualmente?" value="Sim" required> Sim</label>
+            <label class="opt"><input type="radio" name="Utiliza atualmente?" value="Não"> Não</label>
+            <label class="opt"><input type="radio" name="Utiliza atualmente?" value="Já utilizei no passado"> Já utilizei no passado</label>
+          </div>
+
+          <label>2) Quais linhas você utiliza atualmente? (múltipla escolha)</label>
+          <div class="optRow">
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Trefilados 1020"> Trefilados 1020</label>
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Trefilados 1045"> Trefilados 1045</label>
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Especiais 4140"> Especiais 4140</label>
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Tubos galvanizados"> Tubos galvanizados</label>
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Tubos finos a frio"> Tubos finos a frio</label>
+            <label class="opt"><input type="checkbox" name="Linhas utilizadas[]" value="Não utilizo atualmente"> Não utilizo atualmente</label>
+          </div>
+
+          <label>3) Frequência de compra/uso</label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Frequência" value="Semanal"> Semanal</label>
+            <label class="opt"><input type="radio" name="Frequência" value="Quinzenal"> Quinzenal</label>
+            <label class="opt"><input type="radio" name="Frequência" value="Mensal"> Mensal</label>
+            <label class="opt"><input type="radio" name="Frequência" value="Trimestral"> Trimestral</label>
+            <label class="opt"><input type="radio" name="Frequência" value="Esporádico"> Esporádico</label>
+          </div>
+
+          <label>4) Volume médio por período</label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Volume médio" value="Até 1 ton"> Até 1 ton</label>
+            <label class="opt"><input type="radio" name="Volume médio" value="5 a 10 tons"> 5 a 10 tons</label>
+            <label class="opt"><input type="radio" name="Volume médio" value="10 a 15 tons"> 10 a 15 tons</label>
+            <label class="opt"><input type="radio" name="Volume médio" value="Acima de 20 tons"> Acima de 20 tons</label>
+            <label class="opt"><input type="radio" name="Volume médio" value="Prefiro não informar"> Prefiro não informar</label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Avaliação das Linhas Utilizadas</h2>
+          <div class="hint">5) Avalie (1 = Muito Ruim | 5 = Excelente)</div>
+
+          <div class="likert">
+            <div class="q">Qualidade do material</div>
+            <div class="c"><input type="radio" name="Qualidade do material" value="1" required></div>
+            <div class="c"><input type="radio" name="Qualidade do material" value="2"></div>
+            <div class="c"><input type="radio" name="Qualidade do material" value="3"></div>
+            <div class="c"><input type="radio" name="Qualidade do material" value="4"></div>
+            <div class="c"><input type="radio" name="Qualidade do material" value="5"></div>
+          </div>
+
+          <div class="likert">
+            <div class="q">Disponibilidade/Entrega</div>
+            <div class="c"><input type="radio" name="Disponibilidade/Entrega" value="1" required></div>
+            <div class="c"><input type="radio" name="Disponibilidade/Entrega" value="2"></div>
+            <div class="c"><input type="radio" name="Disponibilidade/Entrega" value="3"></div>
+            <div class="c"><input type="radio" name="Disponibilidade/Entrega" value="4"></div>
+            <div class="c"><input type="radio" name="Disponibilidade/Entrega" value="5"></div>
+          </div>
+
+          <div class="likert">
+            <div class="q">Custo-benefício</div>
+            <div class="c"><input type="radio" name="Custo-benefício" value="1" required></div>
+            <div class="c"><input type="radio" name="Custo-benefício" value="2"></div>
+            <div class="c"><input type="radio" name="Custo-benefício" value="3"></div>
+            <div class="c"><input type="radio" name="Custo-benefício" value="4"></div>
+            <div class="c"><input type="radio" name="Custo-benefício" value="5"></div>
+          </div>
+
+          <div class="likert">
+            <div class="q">Atendimento Comercial/Técnico</div>
+            <div class="c"><input type="radio" name="Atendimento Comercial/Técnico" value="1" required></div>
+            <div class="c"><input type="radio" name="Atendimento Comercial/Técnico" value="2"></div>
+            <div class="c"><input type="radio" name="Atendimento Comercial/Técnico" value="3"></div>
+            <div class="c"><input type="radio" name="Atendimento Comercial/Técnico" value="4"></div>
+            <div class="c"><input type="radio" name="Atendimento Comercial/Técnico" value="5"></div>
+          </div>
+
+          <label>6) Principal motivo de escolha da Super Aço</label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Motivo principal" value="Qualidade técnica"> Qualidade técnica</label>
+            <label class="opt"><input type="radio" name="Motivo principal" value="Preço"> Preço</label>
+            <label class="opt"><input type="radio" name="Motivo principal" value="Prazo de entrega"> Prazo de entrega</label>
+            <label class="opt"><input type="radio" name="Motivo principal" value="Suporte técnico"> Suporte técnico</label>
+            <label class="opt"><input type="radio" name="Motivo principal" value="Relação comercial"> Relação comercial</label>
+            <label class="opt"><input type="radio" name="Motivo principal" value="Outro"> Outro</label>
+          </div>
+
+          <label for="melhorias">7) Existe algum ponto de melhoria nas linhas fornecidas?</label>
+          <textarea id="melhorias" name="Pontos de melhoria" placeholder="Escreva aqui (opcional)"></textarea>
+        </div>
+
+        <div class="section">
+          <h2>Oportunidades de Expansão</h2>
+
+          <label>8) Você compra algum desses materiais de outros fornecedores?</label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Compra de outros fornecedores?" value="Sim"> Sim</label>
+            <label class="opt"><input type="radio" name="Compra de outros fornecedores?" value="Não"> Não</label>
+          </div>
+
+          <label>9) Há potencial para ampliar compras nas seguintes linhas?</label>
+          <div class="optRow">
+            <label class="opt"><input type="checkbox" name="Potencial de ampliar[]" value="Trefilados 1020"> Trefilados 1020</label>
+            <label class="opt"><input type="checkbox" name="Potencial de ampliar[]" value="Trefilados 1045"> Trefilados 1045</label>
+            <label class="opt"><input type="checkbox" name="Potencial de ampliar[]" value="Especiais 4140"> Especiais 4140</label>
+            <label class="opt"><input type="checkbox" name="Potencial de ampliar[]" value="Tubos galvanizados"> Tubos galvanizados</label>
+            <label class="opt"><input type="checkbox" name="Potencial de ampliar[]" value="Tubos finos a frio"> Tubos finos a frio</label>
+          </div>
+
+          <label>10) O que facilitaria ampliar o fornecimento com a Super Aço?</label>
+          <div class="optRow">
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Melhor condição comercial"> Melhor condição comercial</label>
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Garantia de estoque/disponibilidade"> Garantia de estoque/disponibilidade</label>
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Ajuste técnico/especificação"> Ajuste técnico/especificação</label>
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Teste piloto"> Teste piloto</label>
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Revisão de prazos"> Revisão de prazos</label>
+            <label class="opt"><input type="checkbox" name="Facilitadores[]" value="Outro"> Outro</label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Finalização</h2>
+
+          <label>Deseja que nossa equipe entre em contato para avaliar oportunidades?</label>
+          <div class="optRow">
+            <label class="opt"><input type="radio" name="Deseja contato?" value="Sim"> Sim</label>
+            <label class="opt"><input type="radio" name="Deseja contato?" value="Não"> Não</label>
+          </div>
+
+          <div class="grid">
+            <div>
+              <label>Contato preferencial</label>
+              <div class="optRow">
+                <label class="opt"><input type="radio" name="Contato preferencial" value="Telefone/WhatsApp"> Telefone/WhatsApp</label>
+                <label class="opt"><input type="radio" name="Contato preferencial" value="E-mail"> E-mail</label>
+              </div>
+            </div>
+            <div>
+              <label for="horario">Melhor horário</label>
+              <input id="horario" name="Melhor horário" type="text" placeholder="Ex.: 09h–12h / 14h–18h" />
+            </div>
+            <div>
+              <label for="tel">Telefone/WhatsApp (se aplicável)</label>
+              <input id="tel" name="Telefone/WhatsApp" type="text" placeholder="(DDD) 9xxxx-xxxx" />
+            </div>
+            <div>
+              <label for="emailret">E-mail (para retorno, se aplicável)</label>
+              <input id="emailret" name="Email de retorno" type="email" placeholder="seuemail@empresa.com" />
+            </div>
+          </div>
+
+          <div class="optRow" style="margin-top:12px;">
+            <label class="opt" style="flex:1 1 100%; align-items:center;">
+              <input type="checkbox" name="Consentimento LGPD" value="Concordo" required>
+              Concordo com o uso destas informações para fins de melhoria de portfólio e atendimento (LGPD). <span class="req">*</span>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit">Enviar respostas</button>
+            <button class="btn secondary" type="reset">Limpar</button>
+          </div>
+
+          <p class="hint">
+            Ao enviar, você concorda em compartilhar estas informações com a Super Aço para fins de melhoria de portfólio e atendimento.
+          </p>
+        </div>
+      </form>
+    </section>
+
+    <footer>© <span id="year"></span> Super Aço — Pesquisa de Portfólio</footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
