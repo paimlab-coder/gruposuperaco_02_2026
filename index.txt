@@ -97,6 +97,25 @@
     footer{margin-top: 16px; color: var(--muted); font-size: 12.5px; opacity:.95; text-align:center;}
     .req{color: var(--danger); font-weight: 800}
     .small{font-size:12.5px; color: var(--muted);}
+
+    /* feedback */
+    .toast{
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      max-width: 520px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.55);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      display:none;
+      z-index: 9999;
+    }
+    .toast.show{display:block;}
+    .toast b{display:block; margin-bottom:4px}
+    .toast small{color: var(--muted)}
   </style>
 </head>
 
@@ -115,7 +134,7 @@
           <div class="small">Grupo Super Aço</div>
         </div>
       </div>
-      <div class="pill">Tempo médio: 2–4 min • Respostas vão para o e-mail comercial</div>
+      <div class="pill">Tempo médio: 2–4 min • Respostas registradas em planilha</div>
     </header>
 
     <section class="hero">
@@ -144,15 +163,8 @@
     </section>
 
     <section class="card">
-
-      <!-- ✅ FORM ÚNICO: tudo dentro do mesmo form (FormSubmit) -->
-      <form action="https://formsubmit.co/diogo.goncalves@gruposuperaco.com" method="POST">
-        <input type="hidden" name="_subject" value="Nova resposta do formulário Super Aço">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_cc" value="diego.goncalves@gruposuperaco.com">
-        <!-- (opcional) após enviar, redireciona para uma página/URL -->
-        <!-- <input type="hidden" name="_next" value="https://seusite.com/obrigado.html"> -->
-
+      <!-- ✅ FORM ÚNICO: envia para Google Sheets via Apps Script -->
+      <form id="pesquisaForm" autocomplete="on">
         <div class="section" style="margin-top:0; padding-top:0; border-top:none;">
           <h2>Identificação (Opcional)</h2>
           <div class="grid">
@@ -343,7 +355,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn" type="submit">Enviar respostas</button>
+            <button class="btn" id="btnEnviar" type="submit">Enviar respostas</button>
             <button class="btn secondary" type="reset">Limpar</button>
           </div>
 
@@ -357,8 +369,85 @@
     <footer>© <span id="year"></span> Super Aço — Pesquisa de Portfólio</footer>
   </div>
 
+  <div class="toast" id="toast">
+    <b id="toastTitle">Enviando…</b>
+    <small id="toastMsg">Aguarde alguns segundos.</small>
+  </div>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ✅ COLE A URL DO SEU APPS SCRIPT AQUI (Web App)
+    // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxx/exec
+    const APPS_SCRIPT_URL = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
+
+    const form = document.getElementById("pesquisaForm");
+    const btn = document.getElementById("btnEnviar");
+    const toast = document.getElementById("toast");
+    const toastTitle = document.getElementById("toastTitle");
+    const toastMsg = document.getElementById("toastMsg");
+
+    function showToast(title, msg){
+      toastTitle.textContent = title;
+      toastMsg.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(()=> toast.classList.remove("show"), 5000);
+    }
+
+    function formToJSON(formEl){
+      const fd = new FormData(formEl);
+      const obj = {};
+
+      // FormData já junta duplicados, mas precisamos tratar checkbox[] e radios
+      for (const [k, v] of fd.entries()){
+        if (k.endsWith("[]")){
+          const key = k;
+          if (!obj[key]) obj[key] = [];
+          obj[key].push(v);
+        } else {
+          // se repetir sem [], vira array também
+          if (obj[k] !== undefined){
+            if (!Array.isArray(obj[k])) obj[k] = [obj[k]];
+            obj[k].push(v);
+          } else {
+            obj[k] = v;
+          }
+        }
+      }
+      return obj;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("COLE_AQUI")) {
+        showToast("Falta configurar", "Cole a URL do Apps Script na variável APPS_SCRIPT_URL.");
+        return;
+      }
+
+      btn.disabled = true;
+      showToast("Enviando…", "Registrando sua resposta na planilha.");
+
+      const payload = formToJSON(form);
+
+      try{
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        showToast("Enviado ✅", "Resposta registrada com sucesso. Obrigado!");
+        form.reset();
+      }catch(err){
+        console.error(err);
+        showToast("Erro ao enviar ❌", "Verifique a URL do Apps Script e se ele está 'Qualquer pessoa' no acesso.");
+      }finally{
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
